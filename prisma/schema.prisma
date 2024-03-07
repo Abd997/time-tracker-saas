@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Tenant {
-  id        String   @id @default(dbgenerated("concat('tnt_', gen_random_uuid() as text)"))
+  id        String   @id @default(dbgenerated("concat('tnt_', gen_random_uuid()::text)"))
   name      String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -21,11 +21,12 @@ model Tenant {
 }
 
 model User {
-  id        String   @id @default(dbgenerated("concat('usr_', gen_random_uuid() as text)"))
+  id        String   @id @default(dbgenerated("concat('usr_', gen_random_uuid()::text)"))
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   email     String   @unique
   name      String?
+  avatar    String?
   tenantId  String?
 
   tenant     Tenant?    @relation(fields: [tenantId], references: [id])
@@ -33,7 +34,7 @@ model User {
 }
 
 model Activity {
-  id        String    @id @default(dbgenerated("concat('act_', gen_random_uuid() as text)"))
+  id        String    @id @default(dbgenerated("concat('act_', gen_random_uuid()::text)"))
   name      String?
   startAt   DateTime
   endAt     DateTime?
