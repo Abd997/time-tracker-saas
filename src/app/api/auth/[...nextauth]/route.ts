@@ -2,6 +2,7 @@ import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
 import { prisma } from "../../../../../lib/prisma";
+import { session } from "@/lib/auth";
 
 const authOptions: NextAuthOptions = {
     session: {
@@ -16,7 +17,6 @@ const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ account, profile }) {
             if (!profile?.email) return false
-
             const user = await prisma.user.upsert({
                 where: {
                     email: profile.email
@@ -36,6 +36,24 @@ const authOptions: NextAuthOptions = {
             })
 
             return true
+        },
+        session: session,
+        async jwt({ token, account, profile }) {
+            if (account) {
+                const user = await prisma.user.findUnique({
+                    where: {
+                        email: profile?.email
+                    }
+                })
+                if (!user)
+                    throw new Error('User not found')
+
+                token.id = account.userId
+                token.tenant = {
+                    id: user.tenantId
+                }
+            }
+            return token
         },
     }
 }

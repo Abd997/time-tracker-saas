@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { Avatar, AvatarImage } from "../ui/avatar";
 import { getServerSession } from "next-auth";
+import { Avatar } from "../Avatar";
+import { getUserSession } from "@/lib/auth";
 
-export default async function Navbar() {
-    // const session = await getServerSession()
-    // if (!session) return
-    // const { user } = session
+export async function Navbar() {
+    const user = await getUserSession()
     return (
         <div className="shadow py-3">
             <div className="container mx-auto flex items-center space-x-4">
@@ -25,14 +24,11 @@ export default async function Navbar() {
                         }
                     </ul>
                 </nav>
+                {/* <Link href="/signout" className="px-2 hover:bg-zinc-100">
+                    <span className="font-semibold" onClick={() => signOut()}>Sign out</span>
+                </Link> */}
                 <span className="flex-grow" />
-                <Avatar>
-                    <AvatarImage
-                        // src={user.image}
-                        src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
-                        referrerPolicy="no-referrer"
-                    />
-                </Avatar>
+                <Avatar user={user}/>
             </div>
         </div>
     )
